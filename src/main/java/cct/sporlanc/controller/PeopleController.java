@@ -28,6 +28,8 @@ public class PeopleController {
 	private ParentDAO parentDAO;
 	@Autowired
 	private StudentDAO studentDAO;
+	@Autowired
+	private BookingDAO bookingDAO;
 
 	// -----------------------------------------------------------------------
 	// Employees
@@ -69,8 +71,8 @@ public class PeopleController {
 		model.setViewName("empForm");
 		return model;
 	}
-	
-	//Admin - can create Employees! 
+
+	// Admin - can create Employees!
 	@RequestMapping(value = "/newEmpAdmin", method = RequestMethod.GET)
 	public ModelAndView newEmployeeAdmin(ModelAndView model) {
 		Employee newEmp = new Employee();
@@ -88,6 +90,7 @@ public class PeopleController {
 		model.setViewName("homeAdmin");
 		return model;
 	}
+
 	@RequestMapping(value = "/saveEmp", method = RequestMethod.POST)
 	public ModelAndView saveEmployee(@ModelAttribute Employee employee) {
 		employeeDAO.saveOrUpdate(employee);
@@ -120,7 +123,7 @@ public class PeopleController {
 		model.addObject("employee", employee);
 		return model;
 	}
-	
+
 	@RequestMapping(value = "/editEmp", method = RequestMethod.GET)
 	public ModelAndView editEmployee(HttpServletRequest request) {
 		int empid = Integer.parseInt(request.getParameter("id"));
@@ -134,13 +137,13 @@ public class PeopleController {
 	public ModelAndView deleteEmployee(HttpServletRequest request) {
 		int empid = Integer.parseInt(request.getParameter("id"));
 		employeeDAO.delete(empid);
-		
+
 		Employee emp = employeeDAO.getEmployee(1);
 		ModelAndView model = new ModelAndView();
 		model.addObject("emp", emp);
 		model.setViewName("homeAdmin");
 		return model;
-		
+
 	}
 
 	// -----------------------------------------------------------------------
@@ -161,7 +164,7 @@ public class PeopleController {
 		model.setViewName("studentForm");
 		return model;
 	}
-	
+
 	@RequestMapping(value = "/newStudentAdmin", method = RequestMethod.GET)
 	public ModelAndView newStudentAdmin(ModelAndView model) {
 		Student newStu = new Student();
@@ -174,24 +177,24 @@ public class PeopleController {
 	@RequestMapping(value = "/saveStudent", method = RequestMethod.POST)
 	public ModelAndView saveStudent(@ModelAttribute Student student) {
 		// Save the information about the children
-		//First, have to check if this Student exist or not
-		boolean duplicate = false; 
+		// First, have to check if this Student exist or not
+		boolean duplicate = false;
 		List<Student> allStudents = studentDAO.list();
-		for (int i = 0; i < allStudents.size(); i++) {	
-			if (allStudents.get(i).getFirst_name().toLowerCase().equalsIgnoreCase(student.getFirst_name())&&
-					allStudents.get(i).getSurname().toLowerCase().equalsIgnoreCase(student.getSurname()) &&
-							(allStudents.get(i).getUserID() == student.getUserID())){ 
-				duplicate = true; 
+		for (int i = 0; i < allStudents.size(); i++) {
+			if (allStudents.get(i).getFirst_name().toLowerCase().equalsIgnoreCase(student.getFirst_name())
+					&& allStudents.get(i).getSurname().toLowerCase().equalsIgnoreCase(student.getSurname())
+					&& (allStudents.get(i).getUserID() == student.getUserID())) {
+				duplicate = true;
 			}
 		}
-		
+
 		if (duplicate == false) {
 			studentDAO.saveOrUpdate(student);
 		}
-		
+
 		// Create a new object with the id from the user!
 		List<Student> listStu = studentDAO.listEachParent(student.getUserID());
-		
+
 		LocalDate now = LocalDate.now();
 		for (int i = 0; i < listStu.size(); i++) {
 			LocalDate birthDate = LocalDate.parse(listStu.get(i).getBirth_date());
@@ -205,11 +208,11 @@ public class PeopleController {
 		model.setViewName("homeParent");
 		return model;
 	}
-	
+
 	@RequestMapping(value = "/saveStudentAdmin", method = RequestMethod.POST)
 	public ModelAndView saveStudentAdmin(@ModelAttribute Student student) {
 		studentDAO.saveOrUpdate(student);
-		
+
 		Employee emp = employeeDAO.getEmployee(1);
 		ModelAndView model = new ModelAndView();
 		model.addObject("emp", emp);
@@ -226,7 +229,7 @@ public class PeopleController {
 		model.addObject("student", student);
 		return model;
 	}
-	
+
 	@RequestMapping(value = "/editStudentAdmin", method = RequestMethod.GET)
 	public ModelAndView editStudentAdmin(HttpServletRequest request) {
 		int studentid = Integer.parseInt(request.getParameter("id"));
@@ -240,22 +243,23 @@ public class PeopleController {
 	public ModelAndView deleteStudent(HttpServletRequest request) {
 		int studentid = Integer.parseInt(request.getParameter("id"));
 		int userid = Integer.parseInt(request.getParameter("parentid"));
-		boolean count = false; 
-		List<Student> list = studentDAO.list();
-		for (int i = 0; i < list.size(); i++) {
-			if (list.get(i).getStudentID() == studentid) {
-				count = true; 
+		boolean count = false;
+
+		List<Booking> listB = bookingDAO.list();
+		for (int ii = 0; ii < listB.size(); ii++) {
+			if (listB.get(ii).getStudentID() == studentid) {
+				count = true;
 				break;
 			}
 		}
-		
+
 		if (count == false) {
 			studentDAO.delete(studentid);
 		}
-		
-		// Once the student is delete, it redirect to same page!
+
+		// Once the student is delete, it redirects to same page!
 		List<Student> listStu = studentDAO.listEachParent(userid);
-		
+
 		LocalDate now = LocalDate.now();
 		for (int i = 0; i < listStu.size(); i++) {
 			LocalDate birthDate = LocalDate.parse(listStu.get(i).getBirth_date());
@@ -287,7 +291,7 @@ public class PeopleController {
 		model.setViewName("parentForm");
 		return model;
 	}
-	
+
 	@RequestMapping(value = "/newParentAdmin", method = RequestMethod.GET)
 	public ModelAndView newParentAdmin(ModelAndView model) {
 		Parent newParent = new Parent();
@@ -306,30 +310,30 @@ public class PeopleController {
 		model.setViewName("loginParent");
 		return model;
 	}
-	
+
 	@RequestMapping(value = "/saveParentAdmin", method = RequestMethod.POST)
 	public ModelAndView saveParentAdmin(@ModelAttribute Parent parent) {
 		parentDAO.saveOrUpdate(parent);
-		
+
 		Employee emp = employeeDAO.getEmployee(1);
 		ModelAndView model = new ModelAndView();
 		model.addObject("emp", emp);
 		model.setViewName("homeAdmin");
 		return model;
 	}
-	
-	//Only Parent can do it
+
+	// Only Parent can do it
 	@RequestMapping(value = "/deleteParent", method = RequestMethod.GET)
 	public ModelAndView deleteParent(HttpServletRequest request) {
 		int parentId = Integer.parseInt(request.getParameter("id"));
 		parentDAO.delete(parentId);
-		
+
 		Employee emp = employeeDAO.getEmployee(1);
 		ModelAndView model = new ModelAndView();
 		model.addObject("emp", emp);
 		model.setViewName("homeAdmin");
 		return model;
-		
+
 	}
 
 	@RequestMapping(value = "/editParent", method = RequestMethod.GET)
@@ -340,7 +344,7 @@ public class PeopleController {
 		model.addObject("parent", parent);
 		return model;
 	}
-	
+
 	@RequestMapping(value = "/editParentAdmin", method = RequestMethod.GET)
 	public ModelAndView editParentAdmin(HttpServletRequest request) {
 		int parentId = Integer.parseInt(request.getParameter("id"));
@@ -349,11 +353,9 @@ public class PeopleController {
 		model.addObject("parent", parent);
 		return model;
 	}
-	
-	
-	
-	//Controller for Eircode - only used for staff and parent/user 
-	
+
+	// Controller for Eircode - only used for staff and parent/user
+
 	// Specific List of Eircode, user in the initial testing phase
 	/*
 	 * @RequestMapping(value = "/listeir", method = RequestMethod.GET) public
@@ -373,26 +375,26 @@ public class PeopleController {
 	@RequestMapping(value = "/saveEir", method = RequestMethod.POST)
 	public ModelAndView saveEircode(@ModelAttribute Eircode eircode) {
 		eircodeDAO.saveOrUpdate(eircode);
-		//If I want to return to list, I have to pass parameter!
+		// If I want to return to list, I have to pass parameter!
 		ModelAndView model = new ModelAndView();
 		Employee newEmp = employeeDAO.getEmployee(1);
 		model.addObject("emp", newEmp);
 		model.setViewName("homeAdmin");
 		return model;
-		
+
 	}
 
 	@RequestMapping(value = "/deleteEir", method = RequestMethod.GET)
 	public ModelAndView deleteEircode(HttpServletRequest request) {
 		int itemId = Integer.parseInt(request.getParameter("id"));
 		eircodeDAO.delete(itemId);
-		
+
 		ModelAndView model = new ModelAndView();
 		Employee newEmp = employeeDAO.getEmployee(1);
 		model.addObject("emp", newEmp);
 		model.setViewName("homeAdmin");
 		return model;
-		
+
 	}
 
 	@RequestMapping(value = "/editEir", method = RequestMethod.GET)

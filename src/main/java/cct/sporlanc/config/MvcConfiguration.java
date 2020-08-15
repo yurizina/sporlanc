@@ -37,11 +37,16 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter{
     public DataSource getDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:8889/sport_center");
-        //To avoid warning use the following link:
+        //To avoid warning:
         //jdbc:mysql://localhost:8080/sport_center?verifyServerCertificate=false&useSSL=true
-        dataSource.setUsername("root");
-        dataSource.setPassword("root");
+        dataSource.setUrl("jdbc:mysql://aausxw6fggekyp.ct1zo6hzbpis.eu-west-1.rds.amazonaws.com:3306/sport_center?verifyServerCertificate=false&useSSL=true");
+        dataSource.setUsername("admin");
+        dataSource.setPassword("manoel1412");
+        
+        //IF the database is not working, deploy in the local machine and use the credentials as follow: 
+        //dataSource.setUrl("jdbc:mysql://localhost:8889/sport_center");
+        //dataSource.setUsername("root");
+        //dataSource.setPassword("root");
          
         return dataSource;
     }

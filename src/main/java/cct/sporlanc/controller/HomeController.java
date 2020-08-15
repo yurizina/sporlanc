@@ -57,7 +57,6 @@ public class HomeController {
 		return model;
 	}
 
-	
 	// SECURITY - After the user try to enter any private URL, which means that sent
 	// by POST data
 	// User is redirected to the main page!
@@ -89,7 +88,7 @@ public class HomeController {
 		model.setViewName("bookingForm");
 		return model;
 	}
-	
+
 	@RequestMapping(value = "/newBookingAdmin", method = RequestMethod.GET)
 	public ModelAndView newBookingAdmin(ModelAndView model) {
 		Booking newBooking = new Booking();
@@ -97,7 +96,7 @@ public class HomeController {
 		model.setViewName("bookingFormAdmin");
 		return model;
 	}
-	
+
 	@RequestMapping(value = "/home2", method = RequestMethod.GET)
 	public ModelAndView home2(ModelAndView model, HttpServletRequest request) {
 		int id = Integer.parseInt(request.getParameter("id"));
@@ -115,16 +114,17 @@ public class HomeController {
 		model.addObject("booking", addbooking);
 		return model;
 	}
-	
+
 	@RequestMapping(value = "/saveBookingAdmin", method = RequestMethod.POST)
 	public ModelAndView saveBookingAdmin(@ModelAttribute Booking booking) {
-		
+
 		bookingDAO.saveOrUpdate(booking);
-		
+
 		ModelAndView model = new ModelAndView();
 		Employee newEmp = employeeDAO.getEmployee(1);
-		//The emp_id is hardcode!Can be implemented a list of employees and return the id of the employe with 
-		//exactly admin username
+		// The emp_id is hardcode!Can be implemented a list of employees and return the
+		// id of the employe with
+		// exactly admin username
 		model.addObject("emp", newEmp);
 		model.setViewName("homeAdmin");
 		return model;
@@ -255,12 +255,22 @@ public class HomeController {
 		}
 
 		List<Student> listStu = studentDAO.listEachParent(userID);
+
+		// Calculate the age of each Student
+		// https://stackoverflow.com/questions/1116123/how-do-i-calculate-someones-age-in-java
+		LocalDate now = LocalDate.now();
+		for (int i = 0; i < listStu.size(); i++) {
+			LocalDate birthDate = LocalDate.parse(listStu.get(i).getBirth_date());
+			int currentAge = Period.between(birthDate, now).getYears();
+			listStu.get(i).setCurrentAge(currentAge);
+		}
+
 		ModelAndView model = new ModelAndView();
 		model.addObject("listStudent", listStu);
 		model.setViewName("homeParent");
 		return model;
 	}
-	
+
 	@RequestMapping(value = "/deleteBookingAdmin", method = RequestMethod.GET)
 	public ModelAndView deleteBookingAdmin(HttpServletRequest request) {
 		int bookingId = Integer.parseInt(request.getParameter("id"));
@@ -273,16 +283,16 @@ public class HomeController {
 		if (flag == false) {
 			bookingDAO.delete(bookingId);
 		}
-		
+
 		ModelAndView model = new ModelAndView();
 		Employee newEmp = employeeDAO.getEmployee(1);
-		//The emp_id is hardcode!Can be implemented a list of employees and return the id of the employe with 
-		//exactly admin username
+		// The emp_id is hardcode!Can be implemented a list of employees and return the
+		// id of the employe with
+		// exactly admin username
 		model.addObject("emp", newEmp);
 		model.setViewName("homeAdmin");
 		return model;
 
-		
 	}
 
 	// -----------------------------------------------------------------------
@@ -306,7 +316,7 @@ public class HomeController {
 	public ModelAndView listClassPerStaff(HttpServletRequest request, ModelAndView model) throws IOException {
 		int emp_id = Integer.parseInt(request.getParameter("id"));
 		List<Classe> listClass = classeDAO.listClassesStaff(emp_id);
-		
+
 		for (int i = 0; i < listClass.size(); i++) {
 			// method to check number of students enrolled to this class
 			int class_id = listClass.get(i).getClass_ID();
@@ -369,11 +379,12 @@ public class HomeController {
 	public ModelAndView saveClass(@ModelAttribute Classe classe) {
 		classeDAO.saveOrUpdate(classe);
 		Employee emp = employeeDAO.getEmployee(classe.getEmp_id());
-		
-		if(emp.getEmp_id() == 1) {
+
+		if (emp.getEmp_id() == 1) {
 			ModelAndView model = new ModelAndView();
-			//The emp_id is hardcode!Can be implemented a list of employees and return the id of the employe with 
-			//exactly admin username
+			// The emp_id is hardcode!Can be implemented a list of employees and return the
+			// id of the employe with
+			// exactly admin username
 			model.addObject("emp", emp);
 			model.setViewName("homeAdmin");
 			return model;
@@ -389,11 +400,11 @@ public class HomeController {
 	public ModelAndView deleteClass(HttpServletRequest request) {
 		int classId = Integer.parseInt(request.getParameter("id"));
 		int empId = Integer.parseInt(request.getParameter("empId"));
-		
+
 		List<Booking> list = bookingDAO.list();
 		int count = 0;
 		for (int i = 0; i < list.size(); i++) {
-			
+
 			if (classId == list.get(i).getClass_ID()) {
 				count++;
 			}
@@ -401,26 +412,24 @@ public class HomeController {
 		if (count == 0) {
 			classeDAO.delete(classId);
 		}
-		
-		
-		
+
 		Employee emp = employeeDAO.getEmployee(empId);
 		ModelAndView model = new ModelAndView();
-		
-		if(empId == 1) {
-			//The emp_id is hardcode!Can be implemented a list of employees and return the id of the employe with 
-			//exactly admin username
+
+		if (empId == 1) {
+			// The emp_id is hardcode!Can be implemented a list of employees and return the
+			// id of the employe with
+			// exactly admin username
 			model.addObject("emp", emp);
 			model.setViewName("homeAdmin");
 			return model;
 		}
-		
+
 		model.addObject("emp", emp);
 		model.setViewName("homeEmployee");
 		return model;
 	}
 
-	
 	@RequestMapping(value = "/editClass", method = RequestMethod.GET)
 	public ModelAndView editClass(HttpServletRequest request, ModelAndView modelb) {
 		int classId = Integer.parseInt(request.getParameter("id"));
@@ -480,7 +489,7 @@ public class HomeController {
 	public ModelAndView saveParent(@ModelAttribute Parent parent) {
 		List<Parent> listParent = parentDAO.list();
 		boolean flag = false;
-		
+
 		for (int i = 0; i < listParent.size(); i++) {
 			if (listParent.get(i).getEmail().equalsIgnoreCase(parent.getEmail())) {
 				// This email is already being used, try another one
@@ -601,7 +610,7 @@ public class HomeController {
 					model.setViewName("homeAdmin");
 					return model;
 				} else {
-					//System.out.println("Username and password correct!! Well done");
+					// System.out.println("Username and password correct!! Well done");
 					index = listStaff.get(i).getEmp_id();
 					// employee.setEmp_id(listStaff.get(index).getEmp_id());
 					flag = true;
@@ -609,13 +618,13 @@ public class HomeController {
 				break;
 
 			} else if (listStaff.get(i).getUsername().equals(employee.getUsername())) {
-				//System.out.println("Username wrong!");
+				// System.out.println("Username wrong!");
 				employee.setUsername("Type Username Again");
 				flag = false;
 				break;
 
 			} else if (listStaff.get(i).getPassword().equals(employee.getPassword())) {
-				//System.out.println("Password wrong!");
+				// System.out.println("Password wrong!");
 				employee.setPassword("Type Password Again");
 				flag = false;
 				break;
@@ -629,7 +638,7 @@ public class HomeController {
 		if (flag == true) {
 			// This method returns the page where employee can edit and delete every
 			// employee info
-			//System.out.println("Enter system :)");
+			// System.out.println("Enter system :)");
 			Employee loggedEmployee = employeeDAO.getEmployee(index);
 			ModelAndView model = new ModelAndView();
 			model.addObject("emp", loggedEmployee);

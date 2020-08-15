@@ -54,22 +54,22 @@
 				<label> Days: </label>
 				
 				<label for="m" >Monday</label>
-				<input type="checkbox" id="m" name="days" value="M" required>
+				<input type="checkbox" id="m" name="days" value="M" >
 
 				<label for="t" >Tuesday </label>
-				<input type="checkbox" id="t" name="days" value="T" required >
+				<input type="checkbox" id="t" name="days" value="T"  >
 				
 				<label for="w" >Wednesday </label>
-				<input type="checkbox" id="w" name="days" value="W" required>
+				<input type="checkbox" id="w" name="days" value="W" >
 
 				<label for="th" >Thursday </label>
-				<input type="checkbox" id="th" name="days" value="TH" required >
+				<input type="checkbox" id="th" name="days" value="TH"  >
 						
 				<label for="f" >Friday </label>
-				<input type="checkbox" id="f" name="days" value="F" required >
+				<input type="checkbox" id="f" name="days" value="F"  >
 				
 				<label for="s" >Saturday </label>
-				<input type="checkbox" id="s" name="days" value="S" required >
+				<input type="checkbox" id="s" name="days" value="S"  >
 				
 				<br>
 				<br>

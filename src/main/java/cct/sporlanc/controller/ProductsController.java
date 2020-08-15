@@ -1,8 +1,7 @@
 package cct.sporlanc.controller;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.Period;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +15,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import cct.sporlanc.dao.*;
 import cct.sporlanc.model.*;
-
 
 @Controller
 public class ProductsController {
@@ -37,12 +35,12 @@ public class ProductsController {
 	private ParentDAO parentDAO;
 	@Autowired
 	private StudentDAO studentDAO;
-	
+
 	@RequestMapping(value = "/listitems", method = RequestMethod.GET)
-	public ModelAndView listItem(HttpServletRequest request, ModelAndView model){
+	public ModelAndView listItem(HttpServletRequest request, ModelAndView model) {
 		int userID = Integer.parseInt(request.getParameter("id"));
-		model.addObject("id", userID); 
-		
+		model.addObject("id", userID);
+
 		List<Item> listItem = itemDAO.list();
 		List<AddItem> listAddItem = additemDAO.list();
 		List<Booking> listBookings = bookingDAO.list();
@@ -51,7 +49,7 @@ public class ProductsController {
 		List<Employee> listEmp = employeeDAO.list();
 		List<Parent> listParent = parentDAO.list();
 		List<Student> listStu = studentDAO.list();
-		
+
 		model.addObject("listStudent", listStu);
 		model.addObject("listParent", listParent);
 		model.addObject("listEmp", listEmp);
@@ -97,31 +95,31 @@ public class ProductsController {
 
 		return model;
 	}
-	
+
 	// ------------------------------------------------------------
 	// Check model AddItem
-	
-	//Specific list of baskets, user in the initial testing phase
+
+	// Specific list of baskets, user in the initial testing phase
 	/*
 	 * @RequestMapping(value = "/listadditem", method = RequestMethod.GET) public
 	 * ModelAndView listAddItem(ModelAndView model) throws IOException {
 	 * List<AddItem> listItem = additemDAO.list(); model.addObject("listAddItem",
 	 * listItem); model.setViewName("home2"); return model; }
 	 */
-	
+
 	@RequestMapping(value = "/basket", method = RequestMethod.GET)
 	public ModelAndView basket(HttpServletRequest request, ModelAndView model) throws IOException {
-		
+
 		int id = Integer.parseInt(request.getParameter("id"));
 		int studentID = Integer.parseInt(request.getParameter("idStu"));
-		
+
 		List<Item> listItem = itemDAO.list();
 		List<AddItem> basket = additemDAO.listBookingID(id);
-		
+
 		model.addObject("student_id", studentID);
 		model.addObject("listAddItem", basket);
 		model.addObject("listItem", listItem);
-		model.setViewName("basket");//change this one! 
+		model.setViewName("basket");// change this one!
 		return model;
 	}
 
@@ -132,32 +130,33 @@ public class ProductsController {
 		model.setViewName("additemform");
 		return model;
 	}
-	//This one requires the Booking ID automatically 
+
+	// This one requires the Booking ID automatically
 	@RequestMapping(value = "/newAddItem2", method = RequestMethod.GET)
 	public ModelAndView newAddItem2(HttpServletRequest request) {
-		
+
 		int bookingId = Integer.parseInt(request.getParameter("id"));
 		int studentId = Integer.parseInt(request.getParameter("idStu"));
-		
-		//Items available 
+
+		// Items available
 		List<Item> listItem = itemDAO.list();
 		for (int i = 0; i < listItem.size(); i++) {
 			if (listItem.get(i).getAvailability().equalsIgnoreCase("False")) {
 				listItem.remove(i);
 			}
 		}
-		
+
 		AddItem newAddItem = new AddItem();
 		newAddItem.setStudent_id(studentId);
 		newAddItem.setBookingID(bookingId);
-		//System.out.println(newAddItem.getStudent_id());
-		
+		// System.out.println(newAddItem.getStudent_id());
+
 		ModelAndView model = new ModelAndView();
 		model.addObject("id", studentId);
 		model.addObject("listItem", listItem);
 		model.addObject("additem", newAddItem);
 		model.setViewName("additemform");
-		
+
 		return model;
 	}
 
@@ -168,7 +167,7 @@ public class ProductsController {
 		List<Item> listItem = itemDAO.list();
 		for (int i = 0; i < listItem.size(); i++) {
 			int item = listItem.get(i).getItem_id();
-			if(item == item_id) {
+			if (item == item_id) {
 				additemDAO.saveOrUpdate(addItem);
 				break;
 			}
@@ -177,27 +176,39 @@ public class ProductsController {
 			List<Booking> listBookings = bookingDAO.listEachStudent(id);
 			List<Classe> listClass = classeDAO.list();
 
+			List<Classe> matchedlist = new ArrayList<Classe>();
+			for (int i = 0; i < listBookings.size(); i++) {
+				for (int ii = 0; ii < listClass.size(); ii++) {
+					if (listBookings.get(i).getClass_ID() == listClass.get(ii).getClass_ID()) {
+						matchedlist.add(listClass.get(ii));
+					}
+				}
+			}
+
+			Student student = studentDAO.getStudent(id);
+
 			ModelAndView model = new ModelAndView();
-			model.addObject("listClasse", listClass);
+			model.addObject("student", student);
+			model.addObject("listClasse", matchedlist);
 			model.addObject("listBooking", listBookings);
 			model.setViewName("bookings");
 			return model;
 		}
-		
+
 		return new ModelAndView("redirect:/");
 	}
 
 	@RequestMapping(value = "/editAddItem", method = RequestMethod.GET)
 	public ModelAndView editAddItem(HttpServletRequest request) {
-		int itemId = Integer.parseInt(request.getParameter("itemID"));
+		// int itemId = Integer.parseInt(request.getParameter("itemID"));
 		int studentId = Integer.parseInt(request.getParameter("stuID"));
 		int additemId = Integer.parseInt(request.getParameter("id"));
-		
-		//Items available 
+
+		// Items available
 		List<Item> listItem = itemDAO.list();
 		AddItem additem = additemDAO.getAddItem(additemId);
 		ModelAndView model = new ModelAndView("/additemform");
-		
+
 		model.addObject("listItem", listItem);
 		model.addObject("id", studentId);
 		model.addObject("additem", additem);
@@ -208,18 +219,18 @@ public class ProductsController {
 	public ModelAndView deleteAddItem(HttpServletRequest request) {
 		int itemId = Integer.parseInt(request.getParameter("id"));
 		additemDAO.delete(itemId);
-		
+
 		int bookingid = Integer.parseInt(request.getParameter("bookingId"));
 		int studentID = Integer.parseInt(request.getParameter("stuID"));
-		
+
 		List<Item> listItem = itemDAO.list();
 		List<AddItem> basket = additemDAO.listBookingID(bookingid);
-		
+
 		ModelAndView model = new ModelAndView();
 		model.addObject("student_id", studentID);
 		model.addObject("listAddItem", basket);
 		model.addObject("listItem", listItem);
-		model.setViewName("basket");//change this one! 
+		model.setViewName("basket");// change this one!
 		return model;
 	}
 

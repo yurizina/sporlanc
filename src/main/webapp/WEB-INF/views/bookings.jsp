@@ -46,7 +46,7 @@
 						<td>
 							&nbsp;&nbsp;&nbsp;&nbsp; <a
 							href="/sporlanc/deleteBooking?id=${booking.booking_ID}&userid=${student.userID}&idStu=${booking.studentID}" 
-							onMouseOver="alert('To delete a booking, all itens in the basket must be empty!');return true;">Delete</a>
+							title="Delete is only available when the basket is empty">Delete</a>
 							&nbsp;&nbsp;&nbsp;&nbsp;<a
 							href="/sporlanc/classdetails?id=${booking.class_ID}&idStu=${booking.studentID}">Class
 								Details</a> &nbsp;&nbsp;&nbsp;&nbsp;<a

@@ -54,8 +54,7 @@
 						<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
 							href="/sporlanc/editStudent?id=${student.studentID}">Edit</a>
 							&nbsp;&nbsp;&nbsp;<a 
-							href="/sporlanc/deleteStudent?id=${student.studentID}&parentid=${student.userID}" title="Only when all bookings are paid!" 
-							onMouseOver="alert('To delete a student, all his/her bookings have to be paid!');return true;">Delete 
+							href="/sporlanc/deleteStudent?id=${student.studentID}&parentid=${student.userID}" title="Only when all bookings are paid!" >Delete 
 							</a>
 							 &nbsp;&nbsp;
 						</td>
